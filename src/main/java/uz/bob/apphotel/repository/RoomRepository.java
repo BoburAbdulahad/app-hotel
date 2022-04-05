@@ -8,6 +8,6 @@ import uz.bob.apphotel.entity.Room;
 @Repository
 public interface RoomRepository extends JpaRepository<Room,Integer> {
     Page<Room> findAllByHotel_Id(Integer hotel_id, Pageable pageable);
-    boolean existsByNumberAndFloorAndSizeAndHotel_Id(String number, Integer floor, String size, Integer hotel_id);
-    boolean existsByNumberAndFloor(String number, Integer floor);
+//    boolean existsByNumberAndFloorAndSizeAndHotel_Id(String number, Integer floor, String size, Integer hotel_id);
+    boolean existsByNumberAndFloorAndHotelId(String number, Integer floor, Integer hotel_id);
 }

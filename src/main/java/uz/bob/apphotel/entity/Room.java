@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"number","floor"}))
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"number","floor"}))
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
