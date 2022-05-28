@@ -29,18 +29,18 @@ public class RoomController {
         List<Room> roomList = roomRepository.findAll();
         return roomList;
     }
-//    @GetMapping("/hotel/{hotelId}") // TODO: 5/27/2022 return rooms pageable by hotelId
-//    public Page<Room> roomsPage(@PathVariable Integer hotelId, @RequestParam int page){
-//        Pageable pageable= PageRequest.of(page,5);
-//        Page<Room> roomPage = roomRepository.findAllByHotel_Id(hotelId, pageable);
-//        return roomPage;
-//    }
+    @GetMapping("/hotel/{hotelId}/{pageNumber}/{pageSize}") // TODO: 5/27/2022 return rooms pageable by hotelId
+    public Page<Room> roomsPage(@PathVariable Integer hotelId, @PathVariable int pageNumber,@PathVariable int pageSize){
+        Pageable pageable= PageRequest.of(pageNumber,pageSize);
+        Page<Room> roomPage = roomRepository.findAllByHotel_Id(hotelId, pageable);
+        return roomPage;
+    }
     @PostMapping
     public String add(@RequestBody RoomDto roomDto){
         Optional<Hotel> optionalHotel = hotelRepository.findById(roomDto.getHotelId());
         if (!optionalHotel.isPresent())
             return "Hotel not founded";
-        boolean existsByNumberAndFloor = roomRepository.existsByNumberAndFloorAndHotelId(// TODO: 5/27/2022 check jpa query
+        boolean existsByNumberAndFloor = roomRepository.existsByNumberAndFloorAndHotelId(
                 roomDto.getNumber(), roomDto.getFloor(), roomDto.getHotelId());
         if (existsByNumberAndFloor)
             return "This number room already exists at the floor in hotel";
