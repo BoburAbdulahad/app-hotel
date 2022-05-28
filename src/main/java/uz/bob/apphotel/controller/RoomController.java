@@ -29,31 +29,27 @@ public class RoomController {
         List<Room> roomList = roomRepository.findAll();
         return roomList;
     }
-    @GetMapping("/hotel/{hotelId}/{page}")
-    public Page<Room> roomsPage(@PathVariable Integer hotelId, @RequestParam int page){
-        Pageable pageable= PageRequest.of(page,5);
-        Page<Room> roomPage = roomRepository.findAllByHotel_Id(hotelId, pageable);
-        return roomPage;
-    }
+//    @GetMapping("/hotel/{hotelId}") // TODO: 5/27/2022 return rooms pageable by hotelId
+//    public Page<Room> roomsPage(@PathVariable Integer hotelId, @RequestParam int page){
+//        Pageable pageable= PageRequest.of(page,5);
+//        Page<Room> roomPage = roomRepository.findAllByHotel_Id(hotelId, pageable);
+//        return roomPage;
+//    }
     @PostMapping
     public String add(@RequestBody RoomDto roomDto){
         Optional<Hotel> optionalHotel = hotelRepository.findById(roomDto.getHotelId());
         if (!optionalHotel.isPresent())
             return "Hotel not founded";
+        boolean existsByNumberAndFloor = roomRepository.existsByNumberAndFloorAndHotelId(// TODO: 5/27/2022 check jpa query
+                roomDto.getNumber(), roomDto.getFloor(), roomDto.getHotelId());
+        if (existsByNumberAndFloor)
+            return "This number room already exists at the floor in hotel";
         Hotel hotel = optionalHotel.get();
         Room room=new Room();
         room.setNumber(roomDto.getNumber());
         room.setFloor(roomDto.getFloor());
         room.setSize(roomDto.getSize());
         room.setHotel(hotel);
-//        boolean exists = roomRepository.existsByNumberAndFloorAndSizeAndHotel_Id(room.getNumber(), room.getFloor(),
-//                room.getSize(), room.getHotel().getId());
-//        if (exists)
-//            return "This room already exist at the hotel";
-        boolean existsByNumberAndFloor = roomRepository.existsByNumberAndFloorAndHotelId(
-                room.getNumber(), room.getFloor(),room.getHotel().getId());
-        if (existsByNumberAndFloor)
-            return "This number room already exists at the floor in hotel";
         roomRepository.save(room);
         return "Room added";
     }
@@ -68,21 +64,29 @@ public class RoomController {
     }
     @PutMapping("/{roomId}")
     public String edit(@PathVariable Integer roomId,@RequestBody RoomDto roomDto){
+        Integer foundedRoomId;
         Optional<Hotel> optionalHotel = hotelRepository.findById(roomDto.getHotelId());
         if (!optionalHotel.isPresent())
             return "Hotel not founded";
-        Hotel hotel = optionalHotel.get();
         Optional<Room> optionalRoom = roomRepository.findById(roomId);
         if (!optionalRoom.isPresent()) {
             return "Room not founded";
         }
         Room room = optionalRoom.get();
+        boolean b = roomRepository.existsByNumberAndFloorAndHotelId(roomDto.getNumber(), roomDto.getFloor(), roomDto.getHotelId());
+        if (b ) {
+            Room foundedRoom = roomRepository.findRoomByNumberAndFloorAndHotelId(roomDto.getNumber(), roomDto.getFloor(), roomDto.getHotelId());
+            if (roomId!=foundedRoom.getId())
+            return "This number room already exists at the floor in hotel";
+        }
+        Hotel hotel = optionalHotel.get();
         room.setNumber(roomDto.getNumber());
         room.setFloor(roomDto.getFloor());
         room.setSize(roomDto.getSize());
         room.setHotel(hotel);
         roomRepository.save(room);
         return "Room successfully edited";
+
 
     }
 

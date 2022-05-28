@@ -7,6 +7,5 @@ import uz.bob.apphotel.entity.Hotel;
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel,Integer> {
 
-//    boolean findByName(String name);
     boolean existsByName(String name);
 }
